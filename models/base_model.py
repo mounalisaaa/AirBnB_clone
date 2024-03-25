@@ -1,12 +1,14 @@
 #!/usr/bin/python3
-""" BaseModel """
-import uuid import uuid4
+""" basemodel the mother of all models """
+
+import models
+from uuid import uuid4
 from datetime import datetime
-from models import storage
+
 
 class BaseModel:
+    """ the base model which all other models inherit from """
 
-    """ Class for base model where all others inherit from """
     def __init__(self, *args, **kwargs):
         """ base model constructor """
 
@@ -23,17 +25,17 @@ class BaseModel:
                     self.__dict__[key] = value
         else:
             models.storage.new(self)
-        
-    def __str__(self):
-        """ representation """
 
-        return "[{}] ({}) {}".\
-            format(type(self).__name__, self.id, self.__dict__)
-    
+    def __str__(self):
+        """ class string representation """
+        class_name = self.__class__.__name__
+        string = f"[{class_name}] ({self.id}) {self.__dict__}"
+        return string
+
     def save(self):
-        """ Updates the instance updated_at with current datetime """
-        self.updated_at = datetime.now()
-        storage.save()
+        """ update the last updated time to now """
+        self.updated_at = datetime.today()
+        models.storage.save()
 
     def to_dict(self):
         """ create new dict for the current class """
@@ -42,4 +44,3 @@ class BaseModel:
         new_dict["updated_at"] = self.updated_at.isoformat()
         new_dict["__class__"] = self.__class__.__name__
         return new_dict
-
